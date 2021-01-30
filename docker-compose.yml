@@ -1,0 +1,30 @@
+version: '3'
+services:
+  veganhack:
+    build: ./api
+    volumes:
+      - ./api:/var/www
+    depends_on:
+      - veganhack-mysql
+
+  veganhack-mysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    restart: always
+    ports:
+      - "3306"
+    volumes:
+      - "./.docker/db_data:/var/lib/mysql"
+    environment:
+      MYSQL_DATABASE: veganhack
+      MYSQL_ROOT_PASSWORD: root
+
+  veganhack-nginx:
+    build: ./.docker/nginx
+    restart: always
+    ports:
+      - "8001:80"
+    volumes:
+    - ./api:/var/www
+    depends_on:
+      - veganhack
